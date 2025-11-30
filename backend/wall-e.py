@@ -1,28 +1,23 @@
+# wall-e.py (COMPLETO E ATUALIZADO)
 import subprocess
 import time
 import os
 import pyautogui
 import pyperclip
-import sys # Import para argumentos de linha de comando
+import sys
 
 # --- CONFIGURAÇÕES DO ROBÔ ---
 CAMINHO_PVA = r"C:\Arquivos de Programas RFB\Programas SPED\Fiscal\SpedEFD.exe"
 PASTA_DO_PVA = os.path.dirname(CAMINHO_PVA)
 CAMINHO_DO_SCRIPT = os.path.dirname(os.path.abspath(__file__))
-
-# --- CAMINHOS DAS IMAGENS (SIMPLIFICADO) ---
 PASTA_IMAGENS = os.path.join(CAMINHO_DO_SCRIPT, "imagens_robo")
-PASTA_IMAGENS_PDF = os.path.join(CAMINHO_DO_SCRIPT, "imagens_pdf") # UMA PASTA SÓ!
-
-# --- VARIÁVEIS GLOBAIS DE DELAY (Serão definidas no __main__) ---
+PASTA_IMAGENS_PDF = os.path.join(CAMINHO_DO_SCRIPT, "imagens_pdf")
 TIMEOUT_VALIDACAO = 900 
 TIMEOUT_RELATORIO = 120 
 DELAY_PADRAO = 7
 DELAY_LONGO = 9
 
-
 # --- FUNÇÕES DE APOIO (IMAGEM) ---
-
 def esperar_e_clicar_imagem(nome_imagem, pasta_base, timeout=30, confianca=0.7):
     caminho_completo = os.path.join(pasta_base, nome_imagem)
     print(f"Procurando por '{caminho_completo}' (confiança: {confianca}) por até {timeout} segundos...")
@@ -64,7 +59,6 @@ def esperar_imagem_aparecer(nome_imagem, pasta_base, timeout=60, confianca=0.8):
             return False
         time.sleep(0.5) 
 
-# --- FUNÇÃO DE APOIO (CLASSIFICADOR) ---
 def esperar_por_duas_imagens(img1, img2, pasta_base, timeout=20):
     print(f"Classificando: '{img1}' (Caminho 1) OU '{img2}' (Caminho 2)...")
     caminho_img1 = os.path.join(pasta_base, img1)
@@ -89,7 +83,6 @@ def esperar_por_duas_imagens(img1, img2, pasta_base, timeout=20):
 
 
 # --- LÓGICA DO ROBÔ ---
-
 def abrir_pva():
     print(f"Iniciando o Wall-E...")
     try:
@@ -178,6 +171,12 @@ def importar_sped(caminho_do_arquivo_txt):
 
 
 # --- FUNÇÕES DE GERAR PDF ---
+def _get_documents_folder():
+    try:
+        pasta_docs = os.path.join(os.path.expanduser("~"), "OneDrive", "Documentos")
+        if os.path.exists(pasta_docs): return pasta_docs
+    except: pass
+    return os.path.join(os.path.expanduser("~"), "Documentos")
 
 def _salvar_pdf(nome_arquivo):
     global DELAY_LONGO
@@ -195,14 +194,7 @@ def _salvar_pdf(nome_arquivo):
         print(f"Aguardando {DELAY_LONGO} segundos para o arquivo ser salvo...")
         time.sleep(DELAY_LONGO) 
         
-        try:
-            pasta_documentos = os.path.join(os.path.expanduser("~"), "OneDrive", "Documentos")
-            if not os.path.exists(pasta_documentos):
-                pasta_documentos = os.path.join(os.path.expanduser("~"), "Documentos")
-        except Exception:
-            pasta_documentos = os.path.join(os.path.expanduser("~"), "Documentos")
-        
-        caminho_salvo = os.path.join(pasta_documentos, nome_arquivo)
+        caminho_salvo = os.path.join(_get_documents_folder(), nome_arquivo)
         
         print(f"PDF salvo com sucesso! Caminho provável: {caminho_salvo}")
         return caminho_salvo
@@ -277,22 +269,24 @@ def gerar_relatorio_apuracao():
 if __name__ == "__main__":
     
     # --- ETAPA 1: RECEBER OS ARGUMENTOS ---
-    # Agora esperamos 3 argumentos
-    if len(sys.argv) < 4:
+    # [MODIFICADO] Agora esperamos 4 argumentos
+    if len(sys.argv) < 5:
         print("ERRO DE USO!")
-        print("Este script precisa de TRÊS argumentos para rodar:")
-        print(r"python wall-e.py C:\path\sped.txt C:\path\livro.pdf 'COD1,COD2,COD3'")
+        print(r"python wall-e.py C:\path\sped.txt C:\path\livro.pdf 'COD1,COD2' '[]'")
         sys.exit(1)
         
     CAMINHO_TESTE_SPED = sys.argv[1]
     CAMINHO_LIVRO_FISCAL = sys.argv[2]
-    CODIGOS_E111_ARG = sys.argv[3] # <-- O NOVO ARGUMENTO (string separada por vírgula)
+    CODIGOS_E111_ARG = sys.argv[3]
+    ADVANCED_FIELDS_ARG = sys.argv[4] # <-- [NOVO] Argumento
     
     print(f"Iniciando processo para:")
     print(f"  SPED: {CAMINHO_TESTE_SPED}")
     print(f"  Livro: {CAMINHO_LIVRO_FISCAL}")
     print(f"  Códigos E111 a verificar: {CODIGOS_E111_ARG}")
+    print(f"  Campos Avançados: {ADVANCED_FIELDS_ARG}")
 
+    # Lógica de tempo baseada no tamanho do arquivo
     print("Verificando tamanho do arquivo para definir timeouts e delays...")
     try:
         TAMANHO_LIMITE_MB = 5
@@ -321,12 +315,15 @@ if __name__ == "__main__":
         if sucesso_importacao:
             print("\nImportação concluída. Iniciando geração de relatórios...")
             
-            # (Gerar os 3 relatórios)
             caminho_pdf_1 = gerar_relatorio_entradas()
             time.sleep(DELAY_PADRAO) 
             caminho_pdf_2 = gerar_relatorio_saidas()
             time.sleep(DELAY_PADRAO)
             caminho_pdf_3 = gerar_relatorio_apuracao()
+            
+            if not all([caminho_pdf_1, caminho_pdf_2, caminho_pdf_3]):
+                 print("ERRO CRÍTICO: Falha ao gerar um ou mais relatórios PDF. Saindo.")
+                 sys.exit(1)
             
             print("\n--- ROBÔ FINALIZOU A GERAÇÃO DE RELATÓRIOS! ---")
             
@@ -340,9 +337,21 @@ if __name__ == "__main__":
                 print(f"ERRO: Não encontrei o script 'ler_pdf.py' em: {caminho_ler_pdf}")
             else:
                 try:
-                    #Passamos o CAMINHO_LIVRO_FISCAL E os CODIGOS_E111_ARG
+                    # --- [MUDANÇA CRÍTICA AQUI] ---
+                    # Agora passamos os 6 argumentos necessários para o ler_pdf.py
+                    command = [
+                        python_exe, 
+                        caminho_ler_pdf,
+                        CAMINHO_LIVRO_FISCAL, # Arg 1: O livro do usuário
+                        caminho_pdf_1,        # Arg 2: O PDF de entradas gerado
+                        caminho_pdf_2,        # Arg 3: O PDF de saídas gerado
+                        caminho_pdf_3,        # Arg 4: O PDF de apuração gerado
+                        CODIGOS_E111_ARG,     # Arg 5: A string de códigos E111
+                        ADVANCED_FIELDS_ARG   # Arg 6: [NOVO] A string de campos avançados
+                    ]
+                    
                     resultado = subprocess.run(
-                        [python_exe, caminho_ler_pdf, CAMINHO_LIVRO_FISCAL, CODIGOS_E111_ARG], 
+                        command, 
                         capture_output=True, 
                         text=True, 
                         check=True,

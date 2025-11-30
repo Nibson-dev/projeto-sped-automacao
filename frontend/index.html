@@ -8,65 +8,14 @@
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <span class="sidebar-icon">📊</span>
-            <span class="sidebar-text">Conciliador</span>
-        </div>
-        <ul class="sidebar-menu">
-            <li>
-                <a href="/"> 
-                    <span class="sidebar-icon">🏠</span>
-                    <span class="sidebar-text">Conciliação</span>
-                </a>
-            </li>
-            <li>
-                <a href="/progresso">
-                    <span class="sidebar-icon">📈</span>
-                    <span class="sidebar-text">Progresso</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <span class="sidebar-icon">⚙️</span>
-                    <span class="sidebar-text">Configurações</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <span class="sidebar-icon">❓</span>
-                    <span class="sidebar-text">Ajuda</span>
-                </a>
-            </li>
-        </ul>
-        <div class="sidebar-footer">
-            <div class="profile-pic">
-                <span>NM</span>
-            </div>
-            <div class="profile-info">
-                <span class="profile-name">Nibson Muller</span>
-                <span class="profile-status">
-                    <span class="online-dot"></span> Online
-                </span>
-            </div>
-        </div>
-    </nav>
-
     <div class="content-wrapper">
-        
         <header class="top-bar">
-            <button id="menu-toggle-btn" title="Abrir Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <span class="top-bar-title">Dashboard de Conciliação</span>
+            <span class="top-bar-title">📊 Dashboard de Conciliação Fiscal</span>
         </header>
         
         <main class="content">
-            
             <div class="card card-upload">
-                <h2>Iniciar Análise Completa</h2>
+                <h2>Iniciar Nova Análise</h2>
                 <div id="upload-area">
                     <div class="form-row">
                         <div class="form-group">
@@ -78,35 +27,141 @@
                             <input type="file" id="file_livro" name="file_livro" accept=".pdf" required>
                         </div>
                     </div>
+
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="manual-mode-checkbox">
+                        <label for="manual-mode-checkbox">Já tenho os 3 relatórios PDF gerados pelo PVA.</label>
+                    </div>
+
+                    <div id="manual-upload-area" class="hidden">
+                        <div class="form-row">
+                             <div class="form-group">
+                                <label for="file_entradas_pdf">3. Relatório de Entradas (.pdf)</label>
+                                <input type="file" id="file_entradas_pdf" name="file_entradas_pdf" accept=".pdf">
+                            </div>
+                            <div class="form-group">
+                                <label for="file_saidas_pdf">4. Relatório de Saídas (.pdf)</label>
+                                <input type="file" id="file_saidas_pdf" name="file_saidas_pdf" accept=".pdf">
+                            </div>
+                            <div class="form-group">
+                                <label for="file_apuracao_pdf">5. Relatório de Apuração (.pdf)</label>
+                                <input type="file" id="file_apuracao_pdf" name="file_apuracao_pdf" accept=".pdf">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="button-row">
                         <button type="button" id="btn-processar-tudo">
                             <span id="btn-text-processar">Processar Análise Completa</span>
                             <div id="loader-processar" class="loader hidden"></div>
                         </button>
                     </div>
-                    <div id="status-message-totais" class="status" aria-live="polite"></div>
+                    <div id="status-message-geral" class="status" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <div class="toggle-wrapper">
+                <button type="button" id="btn-toggle-avancado" class="btn-toggle">Mostrar Extração Avançada (Apuração SPED)</button>
+            </div>
+            
+            <div id="card-extracao-avancada" class="card-resultado card-largo aguardando hidden">
+                <div class="card-header">
+                    <h3>Extração Avançada (Relatório SPED)</h3>
+                    <div id="status-extracao-avancada" class="status-box">Aguardando...</div>
+                </div>
+                
+                <div class="card-body">
+                    <p>Selecione os campos do Relatório de Apuração do SPED que você deseja extrair. Os valores Padrão (Recolher/Saldo) já são exibidos abaixo.</p>
+                    <div class="checkbox-grid">
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_DEBITO_SAIDAS" value="AP_DEBITO_SAIDAS">
+                            <label for="chk_AP_DEBITO_SAIDAS">SAÍDAS E PRESTAÇÕES COM DÉBITO DO IMPOSTO</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_AJUSTES_DEBITO_DOC" value="AP_AJUSTES_DEBITO_DOC">
+                            <label for="chk_AP_AJUSTES_DEBITO_DOC">VALOR TOTAL DOS AJUSTES A DÉBITO (decorrentes do documento fiscal)</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_AJUSTES_DEBITO_IMP" value="AP_AJUSTES_DEBITO_IMP">
+                            <label for="chk_AP_AJUSTES_DEBITO_IMP">VALOR TOTAL DOS AJUSTES A DÉBITO DO IMPOSTO</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_ESTORNO_CREDITOS" value="AP_ESTORNO_CREDITOS">
+                            <label for="chk_AP_ESTORNO_CREDITOS">VALOR TOTAL DOS ESTORNOS DE CRÉDITOS</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_CREDITO_ENTRADAS" value="AP_CREDITO_ENTRADAS">
+                            <label for="chk_AP_CREDITO_ENTRADAS">VALOR TOTAL DOS CRÉDITOS POR ENTRADAS E AQUISIÇÕES COM CRÉDITO DO IMPOSTO</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_AJUSTES_CREDITO_DOC" value="AP_AJUSTES_CREDITO_DOC">
+                            <label for="chk_AP_AJUSTES_CREDITO_DOC">VALOR TOTAL DOS AJUSTES A CRÉDITO (decorrentes do documento fiscal)</label>
+                        </div>
+                         <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_AJUSTES_CREDITO_IMP" value="AP_AJUSTES_CREDITO_IMP">
+                            <label for="chk_AP_AJUSTES_CREDITO_IMP">VALOR TOTAL DOS AJUSTES A CRÉDITO DO IMPOSTO</label>
+                        </div>
+                         <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_ESTORNO_DEBITOS" value="AP_ESTORNO_DEBITOS">
+                            <label for="chk_AP_ESTORNO_DEBITOS">VALOR TOTAL DOS ESTORNOS DE DÉBITOS</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_SALDO_ANTERIOR" value="AP_SALDO_ANTERIOR">
+                            <label for="chk_AP_SALDO_ANTERIOR">VALOR TOTAL DO SALDO CREDOR DO periodo ANTERIOR</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_SALDO_DEVEDOR" value="AP_SALDO_DEVEDOR">
+                            <label for="chk_AP_SALDO_DEVEDOR">VALOR DO SALDO DEVEDOR</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_DEDUCOES" value="AP_DEDUCOES">
+                            <label for="chk_AP_DEDUCOES">VALOR TOTAL DAS DEDUÇÕES</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_RECOLHER" value="AP_RECOLHER">
+                            <label for="chk_AP_RECOLHER">VALOR TOTAL DO ICMS A RECOLHER</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_SALDO_CREDOR" value="AP_SALDO_CREDOR">
+                            <label for="chk_AP_SALDO_CREDOR">VALOR TOTAL DO SALDO CREDOR A TRANSPORTAR PARA O período SEGUINTE</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="chk-avancado" id="chk_AP_EXTRA_APURACAO" value="AP_EXTRA_APURACAO">
+                            <label for="chk_AP_EXTRA_APURACAO">VALORES RECOLHIDOS OU A RECOLHER, EXTRA-APURAÇÃO</label>
+                        </div>
+                    </div>
+
+                    <div class="tabela-container" style="height: auto; max-height: 400px; margin-top: 20px;">
+                        <table id="tabela-apuracao-avancada">
+                            <thead>
+                                <tr>
+                                    <th>Campo Solicitado</th>
+                                    <th>Valor (Relatório SPED)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-apuracao-avancada-body">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <h2>Resultados da Conciliação de Totais</h2>
             <div class="dashboard-grid">
-                
-                <!-- Card de Entradas atualizado -->
                 <div id="card-entradas" class="card-resultado card-largo aguardando">
                     <div class="card-header">
                         <h3>Conciliação de Entradas</h3>
                         <div id="resultado-entradas" class="status-box">Aguardando...</div>
                     </div>
-                    <!-- Reusando a classe .card-body-apuracao para as colunas -->
                     <div class="card-body card-body-apuracao">
                         <div class="coluna">
-                            <h4>SPED (.txt)</h4>
+                            <h4>Relatório SPED</h4>
                             <p>Total Operação: <span id="sped-e-total">--</span></p>
                             <p>Base de Cálculo ICMS: <span id="sped-e-bc">--</span></p>
                             <p>Total ICMS: <span id="sped-e-icms">--</span></p>
                         </div>
                         <div class="coluna">
-                            <h4>Livro Fiscal (.pdf)</h4>
+                            <h4>Livro Fiscal</h4>
                             <p>Total Operação: <span id="livro-e-total">--</span></p>
                             <p>Base de Cálculo ICMS: <span id="livro-e-bc">--</span></p>
                             <p>Total ICMS: <span id="livro-e-icms">--</span></p>
@@ -118,22 +173,20 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Card de Saídas atualizado -->
                 <div id="card-saidas" class="card-resultado card-largo aguardando">
-                    <div class="card-header">
+                     <div class="card-header">
                         <h3>Conciliação de Saídas</h3>
                         <div id="resultado-saidas" class="status-box">Aguardando...</div>
                     </div>
                     <div class="card-body card-body-apuracao">
                         <div class="coluna">
-                            <h4>SPED (.txt)</h4>
+                            <h4>Relatório SPED</h4>
                             <p>Total Operação: <span id="sped-s-total">--</span></p>
                             <p>Base de Cálculo ICMS: <span id="sped-s-bc">--</span></p>
                             <p>Total ICMS: <span id="sped-s-icms">--</span></p>
                         </div>
                         <div class="coluna">
-                            <h4>Livro Fiscal (.pdf)</h4>
+                            <h4>Livro Fiscal</h4>
                             <p>Total Operação: <span id="livro-s-total">--</span></p>
                             <p>Base de Cálculo ICMS: <span id="livro-s-bc">--</span></p>
                             <p>Total ICMS: <span id="livro-s-icms">--</span></p>
@@ -145,15 +198,12 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Card de Apuração -->
+                
                 <div id="card-apuracao" class="card-resultado card-largo aguardando">
-                    <div class="card-header">
-                        <h3>Apuração de ICMS (Operações Próprias)</h3>
-                    </div>
+                    <div class="card-header"><h3>Apuração de ICMS (Operações Próprias)</h3></div>
                     <div class="card-body-apuracao">
                         <div class="coluna">
-                            <h4>Valores do SPED</h4>
+                            <h4>Valores do Relatório SPED</h4>
                             <p>Total a Recolher: <span id="sped-a1">--</span></p>
                             <p>Saldo Credor: <span id="sped-a2">--</span></p>
                         </div>
@@ -172,20 +222,18 @@
 
             <h2>Alertas de Análise (E111)</h2>
             <div class="dashboard-grid">
-                <div id="card-alertas" class="card-resultado card-largo aguardando">
+                 <div id="card-alertas" class="card-resultado card-largo aguardando">
                     <div class="card-header">
                         <h3>Verificação de Códigos E111 (SPED vs. Livro)</h3>
                         <div id="status-alertas" class="status-box">Aguardando...</div>
                     </div>
                     <div class="card-body">
-                        <p>O robô verificou todos os códigos `|E111|` do SPED e procurou por eles no Livro Fiscal. Códigos ausentes podem indicar um erro de lançamento no Livro.</p>
-                        <ul id="lista-alertas-codigos">
-                            </ul>
+                        <p>Verificamos se todos os códigos <code>|E111|</code> do SPED existem no Livro Fiscal.</p>
+                        <ul id="lista-alertas-codigos"></ul>
                     </div>
                 </div>
             </div>
             
-            <!-- Adicionado para a soma E116 vs Inf. Comp. -->
             <h2>Conciliação de Ajustes Detalhados</h2>
             <div class="dashboard-grid">
                 <div id="card-detalhe-e116" class="card-resultado card-largo aguardando">
@@ -198,7 +246,7 @@
                             <h4>SPED (.txt)</h4>
                             <p>Soma dos Registros |E116|: <span id="sped-e116-soma">--</span></p>
                         </div>
-                        <div class="coluna">
+                       <div class="coluna">
                             <h4>Livro Fiscal (.pdf)</h4>
                             <p>Soma "Informações Complementares": <span id="livro-infcomp-soma">--</span></p>
                         </div>
@@ -223,17 +271,13 @@
                                 <button class="filtro-btn" data-filtro="reg-e116">E116</button>
                             </div>
                             <div class="tabela-container" id="bloco-e-table-wrapper">
-                                <table id="bloco-e-table">
-                                    <tbody id="bloco-e-table-body"></tbody>
-                                </table>
+                                <table id="bloco-e-table"><tbody id="bloco-e-table-body"></tbody></table>
                             </div>
                         </div>
                         <div class="coluna-detalhe">
                             <h4>Totais por Código do Livro (.pdf)</h4>
-                            <div class="tabela-container">
-                                <table id="detalhamento-table">
-                                    <tbody id="detalhamento-table-body"></tbody>
-                                </table>
+                             <div class="tabela-container">
+                                <table id="detalhamento-table"><tbody id="detalhamento-table-body"></tbody></table>
                             </div>
                         </div>
                     </div>
