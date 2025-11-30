@@ -1,4 +1,4 @@
-# wall-e.py (COMPLETO E ATUALIZADO)
+# wall-e.py (COMPLETO, ATUALIZADO COM LIMPEZA AUTOMÁTICA)
 import subprocess
 import time
 import os
@@ -268,17 +268,14 @@ def gerar_relatorio_apuracao():
 # --- PONTO DE PARTIDA PRINCIPAL (ATUALIZADO) ---
 if __name__ == "__main__":
     
-    # --- ETAPA 1: RECEBER OS ARGUMENTOS ---
-    # [MODIFICADO] Agora esperamos 4 argumentos
     if len(sys.argv) < 5:
-        print("ERRO DE USO!")
-        print(r"python wall-e.py C:\path\sped.txt C:\path\livro.pdf 'COD1,COD2' '[]'")
+        print("ERRO DE USO: python wall-e.py C:\\path\\sped.txt C:\\path\\livro.pdf 'COD1,COD2' '[]'")
         sys.exit(1)
         
     CAMINHO_TESTE_SPED = sys.argv[1]
     CAMINHO_LIVRO_FISCAL = sys.argv[2]
     CODIGOS_E111_ARG = sys.argv[3]
-    ADVANCED_FIELDS_ARG = sys.argv[4] # <-- [NOVO] Argumento
+    ADVANCED_FIELDS_ARG = sys.argv[4]
     
     print(f"Iniciando processo para:")
     print(f"  SPED: {CAMINHO_TESTE_SPED}")
@@ -286,7 +283,6 @@ if __name__ == "__main__":
     print(f"  Códigos E111 a verificar: {CODIGOS_E111_ARG}")
     print(f"  Campos Avançados: {ADVANCED_FIELDS_ARG}")
 
-    # Lógica de tempo baseada no tamanho do arquivo
     print("Verificando tamanho do arquivo para definir timeouts e delays...")
     try:
         TAMANHO_LIMITE_MB = 5
@@ -337,17 +333,15 @@ if __name__ == "__main__":
                 print(f"ERRO: Não encontrei o script 'ler_pdf.py' em: {caminho_ler_pdf}")
             else:
                 try:
-                    # --- [MUDANÇA CRÍTICA AQUI] ---
-                    # Agora passamos os 6 argumentos necessários para o ler_pdf.py
                     command = [
                         python_exe, 
                         caminho_ler_pdf,
-                        CAMINHO_LIVRO_FISCAL, # Arg 1: O livro do usuário
-                        caminho_pdf_1,        # Arg 2: O PDF de entradas gerado
-                        caminho_pdf_2,        # Arg 3: O PDF de saídas gerado
-                        caminho_pdf_3,        # Arg 4: O PDF de apuração gerado
-                        CODIGOS_E111_ARG,     # Arg 5: A string de códigos E111
-                        ADVANCED_FIELDS_ARG   # Arg 6: [NOVO] A string de campos avançados
+                        CAMINHO_LIVRO_FISCAL, # Arg 1
+                        caminho_pdf_1,        # Arg 2
+                        caminho_pdf_2,        # Arg 3
+                        caminho_pdf_3,        # Arg 4
+                        CODIGOS_E111_ARG,     # Arg 5
+                        ADVANCED_FIELDS_ARG   # Arg 6
                     ]
                     
                     resultado = subprocess.run(
@@ -370,6 +364,20 @@ if __name__ == "__main__":
                     print(f"ERRO: O script 'ler_pdf.py' falhou:")
                     print(e.stdout) 
                     print(e.stderr) 
+            
+            # --- [NOVO] ETAPA 4: LIMPEZA DOS ARQUIVOS GERADOS ---
+            print("\n--- LIMPEZA: Apagando arquivos temporários gerados pelo robô ---")
+            arquivos_para_apagar = [caminho_pdf_1, caminho_pdf_2, caminho_pdf_3]
+            
+            for arquivo in arquivos_para_apagar:
+                if arquivo and os.path.exists(arquivo):
+                    try:
+                        os.remove(arquivo)
+                        print(f"Arquivo apagado com sucesso: {arquivo}")
+                    except Exception as e:
+                        print(f"AVISO: Não foi possível apagar {arquivo}. Erro: {e}")
+            print("--- Fim da Limpeza ---")
+
         else:
             print("\nWall-E encontrou um problema durante a IMPORTAÇÃO/ABERTURA.")
     else:
