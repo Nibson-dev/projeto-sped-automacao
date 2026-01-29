@@ -5,7 +5,7 @@
 
 ---
 
- **Nota Histórica:** Este código representa a **Versão 1.0** (2025/2026), pioneira na automação fiscal do projeto. Embora tenha sido substituída por versões mais modernas feitas por mim baseadas em processamento de dados brutos, esta versão foi crucial para validar a lógica de conciliação.
+ **Nota Histórica:** Este código representa a **Versão 1.0** (2025/2026), pioneira na automação fiscal do projeto. Embora tenha sido substituída por versões mais modernas feitas por mim, baseadas em processamento de dados brutos, esta versão foi crucial para validar a lógica de conciliação.
 
 ---
 
