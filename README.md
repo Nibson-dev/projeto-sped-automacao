@@ -13,7 +13,7 @@
 O **SPED (Sistema Público de Escrituração Digital)** e seu validador oficial, o **PVA**, são softwares desktop legados, sem API e extremamente manuais.
 O desafio era claro: **Como automatizar a auditoria de arquivos fiscais gigantescos dentro de um software que não permite integração?**
 
-Na época, não podíamos esperar. Precisávamos de uma solução que "operasse" o computador como um humano faria.
+Na época, não podíamos esperar. Eu precisava de uma solução que "operasse" o computador como um humano faria.
 
 ---
 
