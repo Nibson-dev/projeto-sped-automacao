@@ -19,7 +19,7 @@ Na época, não podíamos esperar. Precisávamos de uma solução que "operasse"
 
 ##  A Solução V1: "Visão Computacional na Nuvem"
 
-Nesta versão, criamos um robô (RPA) hospedado na **Microsoft Azure** que literalmente "enxergava" a tela do PVA.
+Nesta versão, criei um robô (RPA) hospedado na **Microsoft Azure** que literalmente "enxergava" a tela do PVA.
 
 ### A Engenharia por trás (O "Hack"):
 1.  **Ambiente Virtualizado:** Uma VM Windows na Azure rodava o software PVA 24/7.
