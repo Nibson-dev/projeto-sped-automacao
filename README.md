@@ -24,7 +24,7 @@ Nesta versão, criei um robô (RPA) hospedado na **Microsoft Azure** que literal
 ### A Engenharia por trás (O "Hack"):
 1.  **Ambiente Virtualizado:** Uma VM Windows na Azure rodava o software PVA 24/7.
 2.  **Operação Visual:** O script Python utilizava reconhecimento de imagem para identificar botões ("Validar", "Gerar Relatório", "Erros") na tela do programa governamental.
-3.  **Extração OCR:** Como não tínhamos acesso ao banco de dados do PVA, o robô tirava "prints" dos relatórios de erro e usava OCR para transformar pixels em dados auditáveis.
+3.  **Extração OCR:** Como não tinha acesso ao banco de dados do PVA, o robô tirava "prints" dos relatórios de erro e usava OCR para transformar pixels em dados auditáveis.
 
 Foi uma solução de **força bruta inteligente**. Onde não havia porta (API), nós entramos pela janela (Interface Gráfica).
 
